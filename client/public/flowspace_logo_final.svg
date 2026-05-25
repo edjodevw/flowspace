@@ -1,0 +1,24 @@
+<svg width="100%" viewBox="0 0 680 280" role="img" style="" xmlns="http://www.w3.org/2000/svg">
+  <title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">FlowSpace logo</title>
+  <desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">FlowSpace logo — dark icon mark with cream and gold wordmark</desc>
+
+  
+
+  <!-- Icon mark -->
+  <rect x="200" y="40" width="88" height="88" rx="22" fill="#1C1814" style="fill:rgb(28, 24, 20);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect x="220" y="58" width="48" height="9" rx="4.5" fill="#F7F3EC" style="fill:rgb(247, 243, 236);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect x="220" y="72" width="34" height="9" rx="4.5" fill="#C8995A" style="fill:rgb(200, 153, 90);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect x="220" y="86" width="48" height="9" rx="4.5" fill="#F7F3EC" style="fill:rgb(247, 243, 236);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect x="220" y="100" width="22" height="9" rx="4.5" fill="#F7F3EC" opacity="0.4" style="fill:rgb(247, 243, 236);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.4;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Wordmark -->
+  <text x="302" y="102" font-size="52" font-family="'Sora', sans-serif" font-weight="600" fill="#1C1814" letter-spacing="-2" style="fill:rgb(28, 24, 20);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Sora, sans-serif;font-size:52px;font-weight:600;text-anchor:start;dominant-baseline:auto">Flow</text>
+  <text x="420" y="102" font-size="52" font-family="'Sora', sans-serif" font-weight="400" fill="#C8995A" letter-spacing="-2" style="fill:rgb(200, 153, 90);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Sora, sans-serif;font-size:52px;font-weight:400;text-anchor:start;dominant-baseline:auto">Space</text>
+
+  <!-- Tagline -->
+  <text x="303" y="126" font-size="13" font-family="var(--font-sans)" font-weight="400" fill="#8C7E6A" letter-spacing="3" style="fill:rgb(140, 126, 106);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, sans-serif;font-size:13px;font-weight:400;text-anchor:start;dominant-baseline:auto">PRODUCTIVITY SUITE</text>
+
+  <!-- Subtle underline accent -->
+  <rect x="303" y="136" width="100" height="2" rx="1" fill="#C8995A" opacity="0.4" style="fill:rgb(200, 153, 90);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.4;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+</svg>

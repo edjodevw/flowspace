@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  tasks            Task[]
+  habits           Habit[]
+  pomodoroSessions PomodoroSession[]
+  events           Event[]
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  title     String
+  status    String   @default("todo")
+  priority  String   @default("medium")
+  tag       String?
+  dueDate   DateTime?
+  subtasks  Json     @default("[]")
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Habit {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  logs HabitLog[]
+}
+
+model HabitLog {
+  id      Int      @id @default(autoincrement())
+  date    DateTime @default(now())
+
+  habitId Int
+  habit   Habit @relation(fields: [habitId], references: [id])
+}
+
+model PomodoroSession {
+  id        Int      @id @default(autoincrement())
+  duration  Int
+  type      String
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  startAt     DateTime
+  endAt       DateTime?
+  allDay      Boolean  @default(false)
+  color       String   @default("#C8995A")
+  createdAt   DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
