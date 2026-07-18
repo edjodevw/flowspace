@@ -10,7 +10,8 @@ import {
   Timer, 
   BarChart3,
   ShieldCheck,
-  Check
+  Check,
+  Sparkles
 } from 'lucide-react'
 
 const LandingPage = () => {
@@ -35,7 +36,7 @@ const LandingPage = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] overflow-x-hidden selection:bg-amber-100 selection:text-amber-900 font-main">
+    <div className="min-h-screen bg-[#FDFBF7] overflow-x-hidden selection:bg-gray-200 selection:text-gray-900 font-main">
       {/* NAVBAR */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%]">
         <div className="glass rounded-2xl px-6 py-3 flex items-center justify-between shadow-lg border-white/40">
@@ -72,7 +73,7 @@ const LandingPage = () => {
         </div>
 
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <div className="reveal inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm border border-amber-200/50 shadow-sm text-amber-900 text-xs font-semibold px-4 py-1.5 rounded-full mb-10 transition-all hover:bg-white/80 font-main">
+          <div className="reveal inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm border border-gray-200/50 shadow-sm text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full mb-10 transition-all hover:bg-white/80 font-main">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             Empowering 2,000+ creators and professionals
           </div>
@@ -124,7 +125,7 @@ const LandingPage = () => {
             <div className="absolute -top-10 -right-4 md:right-0 float-card" style={{ animationDelay: '0s' }}>
               <div className="glass p-5 rounded-2xl border-white shadow-xl max-w-[200px] text-left">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700">
+                  <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-900">
                     <CheckCircle2 className="h-6 w-6" />
                   </div>
                   <div>
@@ -143,7 +144,7 @@ const LandingPage = () => {
                 <div className="relative">
                   <svg className="w-12 h-12 transform -rotate-90">
                     <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
-                    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="125.6" strokeDashoffset="31.4" className="text-amber-500" />
+                    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="125.6" strokeDashoffset="31.4" className="text-gray-900" />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Timer className="h-4 w-4 text-gray-950" />
@@ -169,7 +170,7 @@ const LandingPage = () => {
         <div className="bento-grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 h-auto md:h-[600px] gap-6">
           {/* Main Feature: Task Management */}
           <div className="bento-item md:col-span-2 md:row-span-2 reveal feature-card-new group font-main">
-            <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 mb-8 group-hover:scale-110 transition-transform duration-500">
+            <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-900 mb-8 group-hover:scale-110 transition-transform duration-500">
               <LayoutGrid className="h-7 w-7" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Task Management</h3>
@@ -181,7 +182,7 @@ const LandingPage = () => {
                  {[1, 2, 3].map(i => (
                    <div key={i} className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
                      <div className="w-5 h-5 rounded border-2 border-amber-200 flex items-center justify-center">
-                       {i === 1 && <Check className="h-3 w-3 text-amber-500" />}
+                       {i === 1 && <Check className="h-3 w-3 text-gray-900" />}
                      </div>
                      <div className={`h-2 rounded-full bg-gray-100 ${i === 1 ? 'w-24' : i === 2 ? 'w-32' : 'w-20'}`} />
                    </div>
@@ -240,9 +241,9 @@ const LandingPage = () => {
       <section className="reveal max-w-6xl mx-auto px-6 pb-32">
         <div className="glass rounded-[40px] p-12 md:p-20 flex flex-col md:flex-row gap-12 md:gap-8 items-center justify-between shadow-2xl border-white/20 font-main">
           {[
-            { value: '10M+', label: 'Tasks Completed', icon: Sparkles, color: 'text-amber-500' },
-            { value: '99.9%', label: 'Uptime Reliability', icon: Zap, color: 'text-blue-500' },
-            { value: '4.9/5', label: 'User Satisfaction', icon: Star, color: 'text-emerald-500' }
+            { value: '10M+', label: 'Tasks Completed', icon: Sparkles, color: 'text-gray-900' },
+            { value: '99.9%', label: 'Uptime Reliability', icon: Zap, color: 'text-gray-900' },
+            { value: '4.9/5', label: 'User Satisfaction', icon: Star, color: 'text-gray-900' }
           ].map(s => {
             const Icon = s.icon
             return (

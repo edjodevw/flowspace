@@ -21,8 +21,8 @@ import {
 
 const COLUMNS = [
   { id: 'todo', label: 'To Do', color: '#6B7280', icon: ClipboardList },
-  { id: 'inprogress', label: 'In Progress', color: '#C8995A', icon: Zap },
-  { id: 'done', label: 'Completed', color: '#10B981', icon: Sparkles }
+  { id: 'inprogress', label: 'In Progress', color: '#1C1814', icon: Zap },
+  { id: 'done', label: 'Completed', color: '#1C1814', icon: Sparkles }
 ]
 const PRIORITIES = ['low', 'medium', 'high']
 const DEFAULT_TAGS = ['Design', 'Dev', 'Content', 'Setup', 'Other']
@@ -45,9 +45,9 @@ const saveTags = (userId, tags) => {
 }
 
 const priorityColor = {
-  low: 'bg-emerald-50/50 text-emerald-700 border-emerald-100',
-  medium: 'bg-amber-50/50 text-amber-700 border-amber-100',
-  high: 'bg-red-50/50 text-red-700 border-red-100'
+  low: 'bg-gray-100/50 text-gray-900 border-gray-200',
+  medium: 'bg-gray-100/50 text-gray-900 border-gray-200',
+  high: 'bg-gray-100/50 text-gray-900 border-gray-200'
 }
 const tagColor = {
   Design: 'bg-violet-50 text-violet-700 border-violet-100',
@@ -253,7 +253,7 @@ const TasksPage = () => {
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
             <span><span className="text-gray-950">{tasks.filter(t => t.status !== 'done').length}</span> active tasks</span>
             <span className="text-gray-300">·</span>
-            <span className="text-emerald-600">{getColumnTasks('done').length} completed</span>
+            <span className="text-gray-900">{getColumnTasks('done').length} completed</span>
           </p>
         </div>
         <button 
@@ -477,7 +477,7 @@ const TasksPage = () => {
                                     onClick={() => toggleSubtask(task, sub.id)}
                                     className={`shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                                       sub.completed
-                                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                                        ? 'bg-gray-900 border-gray-900 text-white'
                                         : 'border-gray-300 hover:border-amber-400 bg-white'
                                     }`}
                                   >
@@ -497,45 +497,59 @@ const TasksPage = () => {
                                   </button>
                                 </div>
                               ))}
-                              {addingSubtaskFor === task.id ? (
-                                <form
-                                  className="flex items-center gap-1.5 pt-0.5"
-                                  onSubmit={(e) => { e.preventDefault(); addSubtask(task) }}
-                                >
-                                  <input
-                                    type="text"
-                                    autoFocus
-                                    placeholder="Subtask title..."
-                                    value={subtaskDraft}
-                                    onChange={e => setSubtaskDraft(e.target.value)}
-                                    onKeyDown={e => {
-                                      if (e.key === 'Escape') {
-                                        setAddingSubtaskFor(null)
-                                        setSubtaskDraft('')
-                                      }
-                                    }}
-                                    className="flex-1 text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-gray-50/50 focus:outline-none focus:border-amber-300 focus:ring-1 focus:ring-amber-100"
-                                  />
-                                  <button
-                                    type="submit"
-                                    disabled={!subtaskDraft.trim()}
-                                    className="text-[9px] font-bold uppercase tracking-widest text-amber-700 hover:text-amber-900 disabled:opacity-40 px-1"
+                              {task.status === 'todo' && (
+                                addingSubtaskFor === task.id ? (
+                                  <form
+                                    className="flex items-center gap-1.5 pt-0.5"
+                                    onSubmit={(e) => { e.preventDefault(); addSubtask(task) }}
                                   >
-                                    Add
+                                    <input
+                                      type="text"
+                                      autoFocus
+                                      placeholder="Subtask title..."
+                                      value={subtaskDraft}
+                                      onChange={e => setSubtaskDraft(e.target.value)}
+                                      onKeyDown={e => {
+                                        if (e.key === 'Escape') {
+                                          setAddingSubtaskFor(null)
+                                          setSubtaskDraft('')
+                                        }
+                                      }}
+                                      className="flex-1 text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-gray-50/50 focus:outline-none focus:border-amber-300 focus:ring-1 focus:ring-amber-100"
+                                    />
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        type="submit"
+                                        disabled={!subtaskDraft.trim()}
+                                        className="text-[9px] font-bold uppercase tracking-widest text-gray-700 hover:text-gray-900 disabled:opacity-40 px-1"
+                                      >
+                                        Add
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setAddingSubtaskFor(null)
+                                          setSubtaskDraft('')
+                                        }}
+                                        className="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 px-1"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </form>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setAddingSubtaskFor(task.id)
+                                      setSubtaskDraft('')
+                                    }}
+                                    className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors pt-0.5"
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                    <span>Add subtask</span>
                                   </button>
-                                </form>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setAddingSubtaskFor(task.id)
-                                    setSubtaskDraft('')
-                                  }}
-                                  className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-amber-700 transition-colors pt-0.5"
-                                >
-                                  <Plus className="h-3 w-3" />
-                                  <span>Add subtask</span>
-                                </button>
+                                )
                               )}
                             </>
                           )
@@ -546,7 +560,7 @@ const TasksPage = () => {
                         {COLUMNS.filter(c => c.id !== task.status).map(c => (
                           <button 
                             key={c.id} 
-                            className="flex-1 flex items-center justify-center gap-1.5 text-[9px] font-bold uppercase tracking-widest py-1.5 rounded-lg text-gray-400 hover:text-amber-800 hover:bg-amber-50/50 transition-all border border-transparent hover:border-amber-100" 
+                            className="flex-1 flex items-center justify-center gap-1.5 text-[9px] font-bold uppercase tracking-widest py-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100/50 transition-all border border-transparent hover:border-gray-200" 
                             onClick={() => moveTask(task, c.id)}
                           >
                             <ArrowRight className="h-3 w-3" />

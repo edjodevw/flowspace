@@ -11,8 +11,8 @@
   --text-main: #1C1814;
   --text-muted: #6B6158;
   --text-dim: #9C948D;
-  --accent-gold: #C8995A;
-  --accent-gold-dark: #A67C46;
+  --accent-gold: #1C1814;
+  --accent-gold-dark: #000000;
   --bg-creme: #FDFBF7;
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.4);
@@ -282,7 +282,7 @@ select.input-field {
   background: #1C1814;
   border-color: #1C1814;
 }
-.check-btn:not(.done):hover { border-color: #C8995A; }
+.check-btn:not(.done):hover { border-color: #1C1814; }
 
 /* ── MOVE BUTTON (tasks) ── */
 .move-btn {
