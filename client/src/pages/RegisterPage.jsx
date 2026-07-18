@@ -41,7 +41,7 @@ const RegisterPage = () => {
         <div className="glow" />
 
         <div className="fade-up text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="flex items-center justify-center gap-2 mb-6 cursor-pointer hover:opacity-90 transition-opacity" onClick={() => navigate('/')}>
             <img src="/flowspace-icon.svg" alt="FlowSpace" className="h-9 w-9" />
             <span className="text-lg font-bold text-gray-900">FlowSpace</span>
           </div>
@@ -145,7 +145,7 @@ const RegisterPage = () => {
         <div className="fade-up-3 text-center mt-5">
           <p className="text-sm text-gray-500">
             Already have an account?{' '}
-            <Link to="/login" className="text-amber-700 font-medium hover:underline">Sign in</Link>
+            <Link to="/login" className="text-gray-900 font-medium hover:underline">Sign in</Link>
           </p>
         </div>
       </div>

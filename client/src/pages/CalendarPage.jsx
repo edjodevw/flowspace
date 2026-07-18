@@ -19,7 +19,7 @@ const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
-const EVENT_COLORS = ['#C8995A', '#10B981', '#6366F1', '#EF4444', '#8B5CF6', '#0EA5E9']
+const EVENT_COLORS = ['#1C1814', '#4B5563', '#6B7280', '#9CA3AF', '#D1D5DB', '#E5E7EB']
 
 const toDateKey = (date) => {
   const y = date.getFullYear()
@@ -249,7 +249,7 @@ const CalendarPage = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-amber-50 rounded-lg border border-amber-100">
-                  <CalendarIcon className="h-4 w-4 text-amber-700" />
+                  <CalendarIcon className="h-4 w-4 text-gray-900" />
                 </div>
                 <h2 className="text-sm font-black text-gray-950 uppercase tracking-widest">
                   {MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}
@@ -267,7 +267,7 @@ const CalendarPage = () => {
                 <button
                   type="button"
                   onClick={goToToday}
-                  className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-800 hover:bg-amber-50 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   Today
                 </button>
@@ -313,7 +313,7 @@ const CalendarPage = () => {
                     }`}
                   >
                     <span className={`text-xs font-bold block mb-1 ${
-                      isSelected ? 'text-white' : isToday ? 'text-amber-700' : currentMonth ? 'text-gray-900' : 'text-gray-300'
+                      isSelected ? 'text-white' : isToday ? 'text-gray-900' : currentMonth ? 'text-gray-900' : 'text-gray-300'
                     }`}>
                       {date.getDate()}
                     </span>
@@ -357,7 +357,7 @@ const CalendarPage = () => {
                   <button
                     type="button"
                     onClick={openCreateForm}
-                    className="mt-3 text-[10px] font-bold uppercase tracking-widest text-amber-700 hover:text-amber-900"
+                    className="mt-3 text-[10px] font-bold uppercase tracking-widest text-gray-700 hover:text-gray-900"
                   >
                     + Add event
                   </button>
@@ -389,7 +389,7 @@ const CalendarPage = () => {
                         <button
                           type="button"
                           onClick={() => openEditForm(event)}
-                          className="p-1.5 text-gray-400 hover:text-amber-700 rounded-lg hover:bg-amber-50"
+                          className="p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
@@ -455,7 +455,7 @@ const CalendarPage = () => {
                   type="checkbox"
                   checked={form.allDay}
                   onChange={e => setForm({ ...form, allDay: e.target.checked })}
-                  className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                  className="rounded border-gray-300 text-gray-900 focus:ring-gray-900"
                 />
                 <span className="text-xs font-bold text-gray-600 uppercase tracking-widest">All day</span>
               </label>

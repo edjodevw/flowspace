@@ -8,6 +8,7 @@ import {
   Flame, 
   Timer,
   Calendar,
+  Settings,
   Menu, 
   X,
   LogOut, 
@@ -105,14 +106,24 @@ const Navbar = ({ collapsed, setCollapsed }) => {
         </nav>
         {/* Drawer footer */}
         <div className="border-t border-gray-100 p-4 space-y-3">
-          <div className="flex items-center gap-3 px-1">
-            <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 border border-amber-200 shrink-0">
-              <User className="h-4 w-4" />
+          {/* Avatar + Name + Gear */}
+          <div className="flex items-center justify-between w-full px-1">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 border border-gray-200 shrink-0">
+                <User className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-gray-900 truncate">{user?.name}</div>
+                <div className="text-[10px] text-gray-400 font-medium truncate">{user?.email}</div>
+              </div>
             </div>
-            <div className="min-w-0">
-              <div className="text-xs font-bold text-gray-900 truncate">{user?.name}</div>
-              <div className="text-[10px] text-gray-400 font-medium truncate">{user?.email}</div>
-            </div>
+            <button
+              onClick={() => { setMobileOpen(false); navigate('/app/settings') }}
+              title="Settings"
+              className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all shrink-0"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
           </div>
           <button
             onClick={() => { setMobileOpen(false); setShowLogoutModal(true) }}
@@ -178,15 +189,28 @@ const Navbar = ({ collapsed, setCollapsed }) => {
 
         {/* Sidebar footer */}
         <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
-          <div className={`flex items-center gap-3 px-1 overflow-hidden ${collapsed ? 'justify-center' : ''}`}>
-            <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 border border-amber-200 shrink-0">
-              <User className="h-4 w-4" />
+          {/* Avatar + Name + Gear */}
+          <div className={`flex items-center px-1 overflow-hidden w-full ${collapsed ? 'justify-center' : 'justify-between'}`}>
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 border border-gray-200 shrink-0">
+                <User className="h-4 w-4" />
+              </div>
+              <div className={`min-w-0 transition-all duration-300 overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                <div className="text-xs font-bold text-gray-900 truncate">{user?.name}</div>
+                <div className="text-[10px] text-gray-400 font-medium truncate">{user?.email}</div>
+              </div>
             </div>
-            <div className={`min-w-0 transition-all duration-300 overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-              <div className="text-xs font-bold text-gray-900 truncate">{user?.name}</div>
-              <div className="text-[10px] text-gray-400 font-medium truncate">{user?.email}</div>
-            </div>
+            {!collapsed && (
+              <button
+                onClick={() => navigate('/app/settings')}
+                title="Settings"
+                className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all shrink-0"
+              >
+                <Settings className="h-4 w-4" />
+              </button>
+            )}
           </div>
+          {/* Logout */}
           <button
             onClick={() => setShowLogoutModal(true)}
             title={collapsed ? 'Logout' : undefined}

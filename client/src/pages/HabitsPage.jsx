@@ -140,10 +140,10 @@ const HabitsPage = () => {
               </div>
               <div className="w-full bg-gray-100/50 rounded-full h-2.5 overflow-hidden border border-gray-100/50">
                 <div className="h-2.5 rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(200,153,90,0.3)]"
-                  style={{ width: `${habits.length ? (completedToday / habits.length) * 100 : 0}%`, background: 'linear-gradient(90deg, #C8995A, #E5C396)' }} />
+                  style={{ width: `${habits.length ? (completedToday / habits.length) * 100 : 0}%`, background: '#1C1814' }} />
               </div>
               {completedToday === habits.length && habits.length > 0 && (
-                <p className="text-xs text-amber-700 font-bold mt-4 flex items-center gap-2 animate-bounce">
+                <p className="text-xs text-gray-900 font-bold mt-4 flex items-center gap-2 animate-bounce">
                   <Sparkles className="h-3.5 w-3.5" /> Perfect day! All habits crushed.
                 </p>
               )}
@@ -169,7 +169,7 @@ const HabitsPage = () => {
 
           {habits.length === 0 ? (
             <div className="flex flex-col items-center justify-center text-center rounded-[32px] border-2 border-dashed border-gray-200 bg-white p-12 lg:p-20 animate-in fade-in zoom-in-95 duration-700">
-              <div className="w-20 h-20 rounded-3xl bg-gray-50 flex items-center justify-center text-4xl mb-6 text-emerald-500 border border-gray-100">
+              <div className="w-20 h-20 rounded-3xl bg-gray-50 flex items-center justify-center text-4xl mb-6 text-gray-900 border border-gray-100">
                 <Leaf className="h-10 w-10" />
               </div>
               <h2 className="text-xl font-bold text-gray-950 mb-2">No habits tracked yet</h2>
@@ -183,18 +183,18 @@ const HabitsPage = () => {
                 const streak = getStreak(habit.logs)
                 return (
                   <div key={habit.id}
-                    className={`transition-all duration-300 group border rounded-3xl p-5 lg:p-6 flex items-center gap-5 animate-in fade-in slide-in-from-bottom-2 ${done ? 'bg-amber-50/40 border-amber-100/50 shadow-sm' : 'bg-white border-gray-100 hover:border-amber-100 hover:shadow-md'}`}>
+                    className={`transition-all duration-300 group border rounded-3xl p-5 lg:p-6 flex items-center gap-5 animate-in fade-in slide-in-from-bottom-2 ${done ? 'bg-gray-50/40 border-gray-200/50 shadow-sm' : 'bg-white border-gray-100 hover:border-gray-200 hover:shadow-md'}`}>
                     <button 
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 border-2 ${done ? 'bg-amber-500 border-amber-400 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)]' : 'bg-white border-gray-100 text-transparent hover:border-amber-300'}`} 
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 border-2 ${done ? 'bg-gray-900 border-gray-900 text-white shadow-sm' : 'bg-white border-gray-100 text-transparent hover:border-gray-300'}`} 
                       onClick={() => toggleHabit(habit)}
                     >
                       <Check className={`h-5 w-5 ${done ? 'scale-100 rotate-0' : 'scale-0 -rotate-45'} transition-all duration-500`} />
                     </button>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-md font-bold truncate ${done ? 'text-amber-900 line-through opacity-70' : 'text-gray-950'}`}>{habit.name}</p>
+                      <p className={`text-md font-bold truncate ${done ? 'text-gray-900 line-through opacity-70' : 'text-gray-950'}`}>{habit.name}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
-                          <Flame className="h-3 w-3 text-orange-500" />
+                          <Flame className="h-3 w-3 text-gray-900" />
                           <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">{streak} day streak</span>
                         </div>
                       </div>

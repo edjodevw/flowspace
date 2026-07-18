@@ -80,7 +80,7 @@ const PomodoroPage = () => {
   const modes = useMemo(() => buildModes(durations), [durations])
   const mode = modes[modeIndex]
   const progress = mode.duration > 0 ? ((mode.duration - timeLeft) / mode.duration) * 100 : 0
-  const ringColor = mode.id === 'focus' ? '#C8995A' : '#1C1814'
+  const ringColor = '#1C1814'
 
   useEffect(() => {
     const loaded = loadDurations(user?.id)
@@ -249,7 +249,7 @@ const PomodoroPage = () => {
                     strokeDasharray="283"
                     strokeDashoffset={283 - (progress * 2.83)}
                     style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.5s ease' }}
-                    className="drop-shadow-[0_0_8px_rgba(200,153,90,0.2)]"
+                    className="drop-shadow-[0_0_8px_rgba(28,24,20,0.2)]"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -306,9 +306,9 @@ const PomodoroPage = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {sessions.slice(0, 6).map(session => (
-                  <div key={session.id} className="flex items-center justify-between p-3.5 bg-gray-50/50 rounded-2xl border border-gray-100 group hover:bg-white hover:border-amber-100 transition-all">
+                  <div key={session.id} className="flex items-center justify-between p-3.5 bg-gray-50/50 rounded-2xl border border-gray-100 group hover:bg-white hover:border-gray-200 transition-all">
                     <div className="flex items-center gap-3">
-                      <div className={`p-1.5 rounded-lg shadow-sm ${session.type === 'focus' ? 'bg-[#1C1814] text-white' : 'bg-[#C8995A] text-white'}`}>
+                      <div className={`p-1.5 rounded-lg shadow-sm ${session.type === 'focus' ? 'bg-[#1C1814] text-white' : 'bg-gray-200 text-gray-900'}`}>
                         {session.type === 'focus' ? <Brain className="h-3 w-3" /> : <Coffee className="h-3 w-3" />}
                       </div>
                       <div>
