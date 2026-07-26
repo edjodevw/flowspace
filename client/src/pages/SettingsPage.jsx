@@ -10,7 +10,8 @@ import {
   Timer,
   Trash2,
   User,
-  Zap
+  Zap,
+  MessageSquare
 } from 'lucide-react'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
@@ -19,6 +20,7 @@ const tabs = [
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'pomodoro', label: 'Pomodoro', icon: Timer },
+  { id: 'feedback', label: 'Feedback', icon: MessageSquare },
   { id: 'danger', label: 'Danger Zone', icon: Trash2 }
 ]
 
@@ -55,6 +57,7 @@ const SettingsPage = () => {
   const [deletePassword, setDeletePassword] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [saving, setSaving] = useState('')
+  const [feedbackMsg, setFeedbackMsg] = useState('')
 
   // Sync profile fields whenever the auth user changes (e.g. after a successful save)
   useEffect(() => {
@@ -63,9 +66,32 @@ const SettingsPage = () => {
     }
   }, [user?.name, user?.email])
 
-  // Reload pomodoro from storage when the logged-in user changes
+  // Reload pomodoro from server (fall back to localStorage)
   useEffect(() => {
-    setPomodoro(loadPomodoro(user?.id))
+    let cancelled = false
+    const hydrate = async () => {
+      const local = loadPomodoro(user?.id)
+      try {
+        const { data } = await api.get('/auth/settings')
+        if (cancelled) return
+        if (data?.pomodoro) {
+          const next = {
+            focus: clampMinutes(data.pomodoro.focus, DEFAULT_MINUTES.focus),
+            short: clampMinutes(data.pomodoro.short, DEFAULT_MINUTES.short),
+            long: clampMinutes(data.pomodoro.long, DEFAULT_MINUTES.long)
+          }
+          setPomodoro(next)
+          localStorage.setItem(storageKey(user?.id), JSON.stringify(next))
+          return
+        }
+        setPomodoro(local)
+        await api.put('/auth/settings', { pomodoro: local })
+      } catch {
+        if (!cancelled) setPomodoro(local)
+      }
+    }
+    hydrate()
+    return () => { cancelled = true }
   }, [user?.id])
 
   const handleProfileSubmit = async (e) => {
@@ -109,7 +135,7 @@ const SettingsPage = () => {
     }
   }
 
-  const savePomodoro = () => {
+  const savePomodoro = async () => {
     const next = {
       focus: clampMinutes(pomodoro.focus, DEFAULT_MINUTES.focus),
       short: clampMinutes(pomodoro.short, DEFAULT_MINUTES.short),
@@ -117,7 +143,31 @@ const SettingsPage = () => {
     }
     setPomodoro(next)
     localStorage.setItem(storageKey(user?.id), JSON.stringify(next))
-    toast.success('Timer settings saved')
+    setSaving('pomodoro')
+    try {
+      await api.put('/auth/settings', { pomodoro: next })
+      toast.success('Timer settings saved')
+    } catch {
+      toast.success('Saved on this device (server sync failed)')
+    } finally {
+      setSaving('')
+    }
+  }
+
+  const handleFeedbackSubmit = async (e) => {
+    e.preventDefault()
+    if (!feedbackMsg.trim()) return toast.error('Feedback message is required')
+    
+    setSaving('feedback')
+    try {
+      await api.post('/feedback', { message: feedbackMsg.trim() })
+      setFeedbackMsg('')
+      toast.success('Thank you! Your feedback has been sent.')
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Unable to send feedback')
+    } finally {
+      setSaving('')
+    }
   }
 
   const deleteAccount = async (e) => {
@@ -142,9 +192,9 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto bg-[#FAFAF8] p-4 sm:p-6 md:p-10">
+    <div className="flex-1 min-h-0 overflow-y-auto bg-[#FAFAF8] dark:bg-gray-950 p-4 sm:p-6 md:p-10 transition-colors duration-300">
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-gray-900 tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Settings</h1>
         <p className="text-sm text-gray-400 mt-1">Manage your account and preferences.</p>
       </div>
 
@@ -162,8 +212,8 @@ const SettingsPage = () => {
                   title={label}
                   className={`flex items-center justify-center md:justify-start gap-3 px-3 md:px-4 py-2.5 rounded-2xl text-[11px] md:text-[13px] font-bold uppercase tracking-widest transition-all duration-200 w-full text-left ${
                     active
-                      ? danger ? 'bg-red-500 text-white shadow-md' : 'bg-[#1C1814] text-white shadow-md'
-                      : danger ? 'text-red-500 hover:bg-red-50' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100'
+                      ? danger ? 'bg-red-500 text-white shadow-md' : 'bg-[#1C1814] dark:bg-gray-800 text-white shadow-md'
+                      : danger ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10' : 'text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -174,7 +224,7 @@ const SettingsPage = () => {
           </nav>
         </aside>
 
-        <main className="flex-1 bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6 min-h-[430px]">
+        <main className="flex-1 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 sm:p-6 min-h-[430px]">
           {activeTab === 'profile' && (
             <section>
               <SectionTitle title="Profile" text="Update the name and email shown across FlowSpace." />
@@ -184,7 +234,7 @@ const SettingsPage = () => {
                 </Field>
                 <Field label="Email">
                   <input 
-                    className="input-field opacity-70 cursor-not-allowed bg-gray-50" 
+                    className="input-field opacity-70 cursor-not-allowed bg-gray-50 dark:bg-gray-800" 
                     type="email" 
                     value={profile.email} 
                     readOnly 
@@ -253,10 +303,33 @@ const SettingsPage = () => {
                   </Field>
                 ))}
                 <div className="flex flex-wrap gap-3">
-                  <button type="button" onClick={savePomodoro} className="btn-dark !py-2.5 !text-xs">Save timer settings</button>
+                  <button type="button" onClick={savePomodoro} disabled={saving === 'pomodoro'} className="btn-dark !py-2.5 !text-xs">
+                    {saving === 'pomodoro' ? 'Saving...' : 'Save timer settings'}
+                  </button>
                   <button type="button" onClick={() => setPomodoro({ ...DEFAULT_MINUTES })} className="btn-outline !py-2.5 !text-xs">Defaults</button>
                 </div>
               </div>
+            </section>
+          )}
+
+          {activeTab === 'feedback' && (
+            <section>
+              <SectionTitle title="Feedback" text="Have an idea or found a bug? Let us know!" />
+              <form onSubmit={handleFeedbackSubmit} className="space-y-4 max-w-xl">
+                <Field label="Your message">
+                  <textarea
+                    className="input-field min-h-[100px] resize-y"
+                    placeholder="Tell us what you think..."
+                    value={feedbackMsg}
+                    onChange={e => setFeedbackMsg(e.target.value)}
+                    required
+                  />
+                </Field>
+                <button type="submit" disabled={saving === 'feedback'} className="btn-dark !py-2.5 !text-xs">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  {saving === 'feedback' ? 'Sending...' : 'Send feedback'}
+                </button>
+              </form>
             </section>
           )}
 
@@ -264,7 +337,7 @@ const SettingsPage = () => {
             <section>
               <SectionTitle title="Danger Zone" text="Delete your account and all FlowSpace data permanently." />
               <form onSubmit={deleteAccount} className="space-y-4 max-w-xl">
-                <label className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+                <label className="flex items-start gap-3 rounded-2xl border border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">
                   <input type="checkbox" checked={confirmDelete} onChange={e => setConfirmDelete(e.target.checked)} className="mt-1" />
                   <span>I understand this will permanently delete my tasks, habits, calendar events, and Pomodoro history.</span>
                 </label>
@@ -286,7 +359,7 @@ const SettingsPage = () => {
 
 const SectionTitle = ({ title, text }) => (
   <div className="mb-6">
-    <h2 className="text-sm font-black text-gray-950 uppercase tracking-widest">{title}</h2>
+    <h2 className="text-sm font-black text-gray-950 dark:text-gray-100 uppercase tracking-widest">{title}</h2>
     <p className="text-sm text-gray-400 mt-1">{text}</p>
   </div>
 )

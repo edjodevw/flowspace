@@ -83,12 +83,39 @@ const PomodoroPage = () => {
   const ringColor = '#1C1814'
 
   useEffect(() => {
-    const loaded = loadDurations(user?.id)
-    setDurations(loaded)
-    setDraft(loaded)
-    setTimeLeft(loaded.focus * 60)
-    setModeIndex(0)
-    setRunning(false)
+    let cancelled = false
+    const hydrate = async () => {
+      const local = loadDurations(user?.id)
+      try {
+        const { data } = await api.get('/auth/settings')
+        if (cancelled) return
+        const source = data?.pomodoro
+          ? {
+              focus: clampMinutes(data.pomodoro.focus, DEFAULT_MINUTES.focus),
+              short: clampMinutes(data.pomodoro.short, DEFAULT_MINUTES.short),
+              long: clampMinutes(data.pomodoro.long, DEFAULT_MINUTES.long)
+            }
+          : local
+        setDurations(source)
+        setDraft(source)
+        setTimeLeft(source.focus * 60)
+        setModeIndex(0)
+        setRunning(false)
+        saveDurations(user?.id, source)
+        if (!data?.pomodoro) {
+          await api.put('/auth/settings', { pomodoro: source })
+        }
+      } catch {
+        if (cancelled) return
+        setDurations(local)
+        setDraft(local)
+        setTimeLeft(local.focus * 60)
+        setModeIndex(0)
+        setRunning(false)
+      }
+    }
+    hydrate()
+    return () => { cancelled = true }
   }, [user?.id])
 
   useEffect(() => {
@@ -158,6 +185,7 @@ const PomodoroPage = () => {
     setDurations(next)
     setDraft(next)
     saveDurations(user?.id, next)
+    api.put('/auth/settings', { pomodoro: next }).catch(() => {})
     const nextModes = buildModes(next)
     if (!running) {
       setTimeLeft(nextModes[modeIndex].duration)
@@ -175,9 +203,9 @@ const PomodoroPage = () => {
 
   return (
     <div className="flex flex-col min-h-0 flex-1 w-full overflow-hidden">
-      <div className="glass border-x-0 border-t-0 border-b border-white/40 px-4 md:px-8 py-4 md:py-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shadow-sm shrink-0">
+      <div className="glass border-x-0 border-t-0 border-b border-gray-100 dark:border-gray-800 px-4 md:px-8 py-4 md:py-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shadow-sm shrink-0">
         <div className="min-w-0">
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tighter">Pomodoro</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tighter">Pomodoro</h1>
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
             Focus {durations.focus}m · Short {durations.short}m · Long {durations.long}m
           </p>
@@ -192,7 +220,7 @@ const PomodoroPage = () => {
         </button>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto bg-gray-50/30 p-4 sm:p-6 lg:p-10">
+      <div className="flex-1 min-h-0 overflow-y-auto bg-gray-50/30 dark:bg-gray-900/30 p-4 sm:p-6 lg:p-10">
         <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {[
@@ -202,21 +230,21 @@ const PomodoroPage = () => {
             ].map(s => {
               const Icon = s.icon
               return (
-                <div key={s.label} className="bg-white border border-gray-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 text-center shadow-sm animate-in fade-in duration-700">
+                <div key={s.label} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl sm:rounded-3xl p-3 sm:p-5 text-center shadow-sm animate-in fade-in duration-700">
                   <div className="flex justify-center mb-1">
                     <Icon className="h-4 w-4 text-gray-400" />
                   </div>
-                  <div className="text-xl font-black text-gray-950 tracking-tighter">{s.value}</div>
+                  <div className="text-xl font-black text-gray-950 dark:text-gray-100 tracking-tighter">{s.value}</div>
                   <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{s.label}</div>
                 </div>
               )
             })}
           </div>
 
-          <div className="timer-card bg-white border border-white rounded-3xl sm:rounded-[40px] p-5 sm:p-8 lg:p-12 shadow-xl relative overflow-hidden animate-in zoom-in-95 duration-700">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100/10 blur-[60px] rounded-full pointer-events-none" />
+          <div className="timer-card bg-white dark:bg-gray-900 border border-white dark:border-gray-800 rounded-3xl sm:rounded-[40px] p-5 sm:p-8 lg:p-12 shadow-xl relative overflow-hidden animate-in zoom-in-95 duration-700">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100/10 dark:bg-amber-900/10 blur-[60px] rounded-full pointer-events-none" />
 
-            <div className="flex gap-2 bg-gray-50/50 backdrop-blur-sm rounded-2xl p-1 mb-10 border border-gray-100/50 max-w-sm mx-auto">
+            <div className="flex gap-2 bg-gray-50/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-1 mb-10 border border-gray-100/50 dark:border-gray-700/50 max-w-sm mx-auto">
               {modes.map((m, i) => {
                 const Icon = m.icon
                 return (
@@ -224,7 +252,7 @@ const PomodoroPage = () => {
                     key={m.id}
                     type="button"
                     onClick={() => switchMode(i)}
-                    className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 text-[10px] font-bold uppercase tracking-widest py-2.5 rounded-xl transition-all duration-300 ${modeIndex === i ? 'bg-[#1C1814] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600 hover:bg-white'}`}
+                    className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 text-[10px] font-bold uppercase tracking-widest py-2.5 rounded-xl transition-all duration-300 ${modeIndex === i ? 'bg-[#1C1814] dark:bg-gray-700 text-white shadow-lg' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-gray-600'}`}
                   >
                     <Icon className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">{m.label}</span>
@@ -253,7 +281,7 @@ const PomodoroPage = () => {
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl lg:text-5xl font-black text-gray-950 tracking-tighter tabular-nums leading-none">
+                  <span className="text-4xl lg:text-5xl font-black text-gray-950 dark:text-gray-100 tracking-tighter tabular-nums leading-none">
                     {formatTime(timeLeft)}
                   </span>
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
@@ -278,7 +306,7 @@ const PomodoroPage = () => {
               <button
                 type="button"
                 onClick={() => setRunning(!running)}
-                className={`w-full sm:w-auto sm:min-w-[150px] !py-3 !px-8 !text-sm font-bold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center gap-2 ${running ? 'bg-[#1C1814] text-white font-bold' : 'btn-gold-premium'}`}
+                className={`w-full sm:w-auto sm:min-w-[150px] !py-3 !px-8 !text-sm font-bold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center gap-2 ${running ? 'bg-[#1C1814] dark:bg-gray-100 text-white dark:text-gray-950 font-bold' : 'btn-gold-premium'}`}
               >
                 {running ? (
                   <>
@@ -296,30 +324,30 @@ const PomodoroPage = () => {
           </div>
 
           {sessions.length > 0 && (
-            <div className="bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 animate-in slide-in-from-bottom-4 duration-700">
+            <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl p-6 lg:p-8 animate-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <History className="h-4 w-4 text-gray-950" />
-                  <h2 className="font-bold text-gray-950 text-xs uppercase tracking-widest px-1">Recent Flow</h2>
+                  <History className="h-4 w-4 text-gray-950 dark:text-gray-100" />
+                  <h2 className="font-bold text-gray-950 dark:text-gray-100 text-xs uppercase tracking-widest px-1">Recent Flow</h2>
                 </div>
                 <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">History</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {sessions.slice(0, 6).map(session => (
-                  <div key={session.id} className="flex items-center justify-between p-3.5 bg-gray-50/50 rounded-2xl border border-gray-100 group hover:bg-white hover:border-gray-200 transition-all">
+                  <div key={session.id} className="flex items-center justify-between p-3.5 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 group hover:bg-white dark:hover:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-600 transition-all">
                     <div className="flex items-center gap-3">
-                      <div className={`p-1.5 rounded-lg shadow-sm ${session.type === 'focus' ? 'bg-[#1C1814] text-white' : 'bg-gray-200 text-gray-900'}`}>
+                      <div className={`p-1.5 rounded-lg shadow-sm ${session.type === 'focus' ? 'bg-[#1C1814] dark:bg-gray-700 text-white' : 'bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-gray-100'}`}>
                         {session.type === 'focus' ? <Brain className="h-3 w-3" /> : <Coffee className="h-3 w-3" />}
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-gray-900 capitalize">{session.type}</span>
+                        <span className="text-xs font-bold text-gray-900 dark:text-gray-100 capitalize">{session.type}</span>
                         <div className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
                           {new Date(session.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-black text-gray-950">{session.duration}m</span>
+                      <span className="text-xs font-black text-gray-950 dark:text-gray-100">{session.duration}m</span>
                       <div className="text-[10px] text-gray-400 font-medium">
                         {new Date(session.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
@@ -334,9 +362,9 @@ const PomodoroPage = () => {
 
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl border border-gray-100 p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xs font-black text-gray-950 uppercase tracking-widest">Timer settings</h2>
+              <h2 className="text-xs font-black text-gray-950 dark:text-gray-100 uppercase tracking-widest">Timer settings</h2>
               <button
                 type="button"
                 onClick={() => setShowSettings(false)}
