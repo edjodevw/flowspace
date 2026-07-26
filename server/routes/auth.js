@@ -7,10 +7,23 @@ const authMiddleware = require('../middleware/auth')
 
 const prisma = new PrismaClient()
 
-const publicUser = (user) => ({ id: user.id, name: user.name, email: user.email })
+const publicUser = (user) => ({ id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin })
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body
+  const name = req.body.name?.trim()
+  const email = req.body.email?.trim().toLowerCase()
+  const password = req.body.password
+
+  if (!name) return res.status(400).json({ message: 'Name is required' })
+  if (!email || !EMAIL_RE.test(email)) {
+    return res.status(400).json({ message: 'A valid email is required' })
+  }
+  if (!password || password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters' })
+  }
+
   try {
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) return res.status(400).json({ message: 'Email already in use' })
@@ -28,7 +41,13 @@ router.post('/register', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body
+  const email = req.body.email?.trim().toLowerCase()
+  const password = req.body.password
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' })
+  }
+
   try {
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user) return res.status(400).json({ message: 'Invalid credentials' })
@@ -63,6 +82,9 @@ router.put('/profile', authMiddleware, async (req, res) => {
   if (!name || !email) {
     return res.status(400).json({ message: 'Name and email are required' })
   }
+  if (!EMAIL_RE.test(email)) {
+    return res.status(400).json({ message: 'A valid email is required' })
+  }
 
   try {
     const existing = await prisma.user.findUnique({ where: { email } })
@@ -76,6 +98,66 @@ router.put('/profile', authMiddleware, async (req, res) => {
     })
 
     res.json(publicUser(user))
+  } catch {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+router.get('/settings', authMiddleware, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { settings: true }
+    })
+    if (!user) return res.status(404).json({ message: 'User not found' })
+    res.json(user.settings || {})
+  } catch {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+router.put('/settings', authMiddleware, async (req, res) => {
+  try {
+    const current = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { settings: true }
+    })
+    if (!current) return res.status(404).json({ message: 'User not found' })
+
+    const prev = (current.settings && typeof current.settings === 'object' && !Array.isArray(current.settings))
+      ? current.settings
+      : {}
+    const next = { ...prev }
+
+    if (req.body.pomodoro && typeof req.body.pomodoro === 'object') {
+      const clamp = (v, fallback) => {
+        const n = parseInt(v, 10)
+        if (Number.isNaN(n)) return fallback
+        return Math.min(Math.max(n, 1), 180)
+      }
+      const prevPomo = prev.pomodoro || {}
+      next.pomodoro = {
+        focus: clamp(req.body.pomodoro.focus, prevPomo.focus ?? 25),
+        short: clamp(req.body.pomodoro.short, prevPomo.short ?? 5),
+        long: clamp(req.body.pomodoro.long, prevPomo.long ?? 15)
+      }
+    }
+
+    if (Array.isArray(req.body.tags)) {
+      next.tags = [...new Set(
+        req.body.tags
+          .map((t) => (typeof t === 'string' ? t.trim() : ''))
+          .filter(Boolean)
+          .slice(0, 50)
+      )]
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.userId },
+      data: { settings: next },
+      select: { settings: true }
+    })
+    res.json(user.settings || {})
   } catch {
     res.status(500).json({ message: 'Server error' })
   }
@@ -130,6 +212,7 @@ router.delete('/account', authMiddleware, async (req, res) => {
       prisma.pomodoroSession.deleteMany({ where: { userId: req.userId } }),
       prisma.event.deleteMany({ where: { userId: req.userId } }),
       prisma.habit.deleteMany({ where: { userId: req.userId } }),
+      prisma.feedback.deleteMany({ where: { userId: req.userId } }),
       prisma.user.delete({ where: { id: req.userId } })
     ])
 
