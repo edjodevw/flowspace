@@ -12,23 +12,27 @@ model User {
   name      String
   email     String   @unique
   password  String
+  isAdmin   Boolean  @default(false)
+  settings  Json     @default("{}")
   createdAt DateTime @default(now())
 
   tasks            Task[]
   habits           Habit[]
   pomodoroSessions PomodoroSession[]
   events           Event[]
+  feedbacks        Feedback[]
 }
 
 model Task {
-  id        Int      @id @default(autoincrement())
-  title     String
-  status    String   @default("todo")
-  priority  String   @default("medium")
-  tag       String?
-  dueDate   DateTime?
-  subtasks  Json     @default("[]")
-  createdAt DateTime @default(now())
+  id          Int       @id @default(autoincrement())
+  title       String
+  status      String    @default("todo")
+  priority    String    @default("medium")
+  tag         String?
+  dueDate     DateTime?
+  subtasks    Json      @default("[]")
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
@@ -48,9 +52,12 @@ model Habit {
 model HabitLog {
   id      Int      @id @default(autoincrement())
   date    DateTime @default(now())
+  day     String
 
   habitId Int
   habit   Habit @relation(fields: [habitId], references: [id])
+
+  @@unique([habitId, day])
 }
 
 model PomodoroSession {
@@ -72,6 +79,15 @@ model Event {
   allDay      Boolean  @default(false)
   color       String   @default("#C8995A")
   createdAt   DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  message   String
+  createdAt DateTime @default(now())
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
