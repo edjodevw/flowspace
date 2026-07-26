@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { useState, useEffect } from 'react'
 import ConfirmModal from './ConfirmModal'
 import { toast } from 'react-hot-toast'
@@ -8,15 +9,20 @@ import {
   Flame, 
   Timer,
   Calendar,
+  BarChart3,
   Settings,
   Menu, 
   X,
   LogOut, 
-  User
+  User,
+  Shield,
+  Moon,
+  Sun
 } from 'lucide-react'
 
 const Navbar = ({ collapsed, setCollapsed }) => {
   const { user, logout } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
@@ -32,13 +38,15 @@ const Navbar = ({ collapsed, setCollapsed }) => {
     { to: '/app/habits',    icon: Flame,      label: 'Habits'   },
     { to: '/app/pomodoro',  icon: Timer,      label: 'Pomodoro' },
     { to: '/app/calendar',  icon: Calendar,   label: 'Calendar' },
+    { to: '/app/insights',  icon: BarChart3,  label: 'Insights' },
+    ...(user?.isAdmin ? [{ to: '/app/admin', icon: Shield, label: 'Admin' }] : []),
   ]
 
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-2xl text-[13px] font-bold uppercase tracking-widest transition-all duration-200 ${
       isActive
-        ? 'bg-[#1C1814] text-white shadow-md'
-        : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100'
+        ? 'bg-[#1C1814] dark:bg-gray-800 text-white shadow-md'
+        : 'text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
     }`
 
   useEffect(() => {
@@ -50,21 +58,21 @@ const Navbar = ({ collapsed, setCollapsed }) => {
   return (
     <>
       {/* ── MOBILE TOP BAR (visible only on < md) ─────────────────── */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-white/95 backdrop-blur-xl border-b border-gray-100 shadow-sm flex items-center justify-between px-4">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 shadow-sm flex items-center justify-between px-4">
         <div className="flex items-center gap-2 select-none">
-          <div className="bg-white p-1 rounded-lg shadow-sm border border-gray-100">
+          <div className="bg-white dark:bg-gray-900 p-1 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
             <img src="/flowspace-icon.svg" alt="FlowSpace" className="h-5 w-5" />
           </div>
-          <span className="text-base font-black text-gray-950 tracking-tighter">FlowSpace</span>
+          <span className="text-base font-black text-gray-950 dark:text-gray-100 tracking-tighter">FlowSpace</span>
         </div>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-2 rounded-xl hover:bg-gray-100 transition-all"
+          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
           aria-label="Toggle menu"
         >
           {mobileOpen
-            ? <X className="h-5 w-5 text-gray-700" />
-            : <Menu className="h-5 w-5 text-gray-700" />}
+            ? <X className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+            : <Menu className="h-5 w-5 text-gray-700 dark:text-gray-200" />}
         </button>
       </header>
 
@@ -79,19 +87,19 @@ const Navbar = ({ collapsed, setCollapsed }) => {
       />
       {/* Drawer panel */}
       <div
-        className={`md:hidden fixed top-0 left-0 h-full w-full z-[70] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed top-0 left-0 h-full w-full z-[70] bg-white dark:bg-gray-950 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         role="dialog"
         aria-modal={mobileOpen}
       >
         {/* Drawer header */}
-        <div className="h-14 flex items-center justify-between px-4 border-b border-gray-100">
+        <div className="h-14 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">
             <img src="/flowspace-icon.svg" alt="FlowSpace" className="h-6 w-6" />
-            <span className="text-lg font-black text-gray-950 tracking-tighter">FlowSpace</span>
+            <span className="text-lg font-black text-gray-950 dark:text-gray-100 tracking-tighter">FlowSpace</span>
           </div>
-          <button onClick={() => setMobileOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 transition-all">
+          <button onClick={() => setMobileOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
@@ -105,29 +113,38 @@ const Navbar = ({ collapsed, setCollapsed }) => {
           ))}
         </nav>
         {/* Drawer footer */}
-        <div className="border-t border-gray-100 p-4 space-y-3">
-          {/* Avatar + Name + Gear */}
+        <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-3">
+          {/* Avatar + Name + Theme + Gear */}
           <div className="flex items-center justify-between w-full px-1">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 border border-gray-200 shrink-0">
+              <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 shrink-0">
                 <User className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold text-gray-900 truncate">{user?.name}</div>
+                <div className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{user?.name}</div>
                 <div className="text-[10px] text-gray-400 font-medium truncate">{user?.email}</div>
               </div>
             </div>
-            <button
-              onClick={() => { setMobileOpen(false); navigate('/app/settings') }}
-              title="Settings"
-              className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all shrink-0"
-            >
-              <Settings className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={toggleTheme}
+                title="Toggle Theme"
+                className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all shrink-0"
+              >
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+              <button
+                onClick={() => { setMobileOpen(false); navigate('/app/settings') }}
+                title="Settings"
+                className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all shrink-0"
+              >
+                <Settings className="h-4 w-4" />
+              </button>
+            </div>
           </div>
           <button
             onClick={() => { setMobileOpen(false); setShowLogoutModal(true) }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 transition-all"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
           >
             <LogOut className="h-4 w-4 shrink-0" />
             Logout
@@ -137,30 +154,30 @@ const Navbar = ({ collapsed, setCollapsed }) => {
 
       {/* ── DESKTOP COLLAPSIBLE SIDEBAR (hidden on mobile) ─────────── */}
       <aside
-        className={`hidden md:flex flex-col h-screen bg-white border-r border-gray-100 shadow-sm transition-all duration-300 ease-in-out shrink-0 ${
+        className={`hidden md:flex flex-col h-screen bg-white dark:bg-gray-950 border-r border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 ease-in-out shrink-0 ${
           collapsed ? 'w-16' : 'w-60'
         }`}
       >
         {/* Sidebar header */}
-        <div className={`flex items-center h-16 px-3 gap-3 border-b border-gray-100 ${collapsed ? 'justify-center' : ''}`}>
+        <div className={`flex items-center h-16 px-3 gap-3 border-b border-gray-100 dark:border-gray-800 ${collapsed ? 'justify-center' : ''}`}>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2.5 rounded-xl hover:bg-gray-100 transition-all duration-200 shrink-0"
+            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 shrink-0"
             aria-label="Toggle sidebar"
           >
             {collapsed
-              ? <Menu className="h-5 w-5 text-gray-600" />
-              : <X className="h-5 w-5 text-gray-600" />}
+              ? <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              : <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />}
           </button>
           <div
             className={`flex items-center gap-2 overflow-hidden transition-all duration-300 select-none ${
               collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
             }`}
           >
-            <div className="bg-white p-1 rounded-lg shadow-sm border border-gray-100 shrink-0">
+            <div className="bg-white dark:bg-gray-900 p-1 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 shrink-0">
               <img src="/flowspace-icon.svg" alt="FlowSpace" className="h-6 w-6" />
             </div>
-            <span className="text-lg font-black text-gray-950 tracking-tighter whitespace-nowrap">FlowSpace</span>
+            <span className="text-lg font-black text-gray-950 dark:text-gray-100 tracking-tighter whitespace-nowrap">FlowSpace</span>
           </div>
         </div>
 
@@ -174,8 +191,8 @@ const Navbar = ({ collapsed, setCollapsed }) => {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-3 rounded-2xl text-[13px] font-bold uppercase tracking-widest transition-all duration-200 whitespace-nowrap overflow-hidden ${
                   isActive
-                    ? 'bg-[#1C1814] text-white shadow-md'
-                    : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100'
+                    ? 'bg-[#1C1814] dark:bg-gray-800 text-white shadow-md'
+                    : 'text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                 } ${collapsed ? 'justify-center' : ''}`
               }
             >
@@ -188,39 +205,57 @@ const Navbar = ({ collapsed, setCollapsed }) => {
         </nav>
 
         {/* Sidebar footer */}
-        <div className="border-t border-gray-100 p-3 flex flex-col gap-2">
+        <div className="border-t border-gray-100 dark:border-gray-800 p-3 flex flex-col gap-2">
           {/* Avatar + Name + Gear */}
           <div className={`flex items-center px-1 overflow-hidden w-full ${collapsed ? 'justify-center' : 'justify-between'}`}>
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 border border-gray-200 shrink-0">
+              <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 shrink-0">
                 <User className="h-4 w-4" />
               </div>
               <div className={`min-w-0 transition-all duration-300 overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-                <div className="text-xs font-bold text-gray-900 truncate">{user?.name}</div>
+                <div className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{user?.name}</div>
                 <div className="text-[10px] text-gray-400 font-medium truncate">{user?.email}</div>
               </div>
             </div>
             {!collapsed && (
-              <button
-                onClick={() => navigate('/app/settings')}
-                title="Settings"
-                className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all shrink-0"
-              >
-                <Settings className="h-4 w-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={toggleTheme}
+                  title="Toggle Theme"
+                  className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all shrink-0"
+                >
+                  {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </button>
+                <button
+                  onClick={() => navigate('/app/settings')}
+                  title="Settings"
+                  className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all shrink-0"
+                >
+                  <Settings className="h-4 w-4" />
+                </button>
+              </div>
             )}
           </div>
           {/* Logout */}
           <button
             onClick={() => setShowLogoutModal(true)}
             title={collapsed ? 'Logout' : undefined}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 transition-all whitespace-nowrap overflow-hidden ${collapsed ? 'justify-center' : ''}`}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all whitespace-nowrap overflow-hidden ${collapsed ? 'justify-center' : ''}`}
           >
             <LogOut className="h-4 w-4 shrink-0" />
             <span className={`transition-all duration-300 overflow-hidden ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
               Logout
             </span>
           </button>
+          {collapsed && (
+             <button
+                onClick={toggleTheme}
+                title="Toggle Theme"
+                className="flex items-center justify-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-bold tracking-widest text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+             >
+                {isDark ? <Sun className="h-4 w-4 shrink-0" /> : <Moon className="h-4 w-4 shrink-0" />}
+             </button>
+          )}
         </div>
       </aside>
 
