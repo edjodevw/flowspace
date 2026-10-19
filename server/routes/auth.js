@@ -58,6 +58,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' })
     res.json({ token, user: publicUser(user) })
   } catch (err) {
+    console.log('Error in login:', err)
     res.status(500).json({ message: 'Server error' })
   }
 })
